@@ -17,4 +17,18 @@ back.
 
 Commands
 =========
-Color: 
+Color:
+
+
+Challenges
+=============
+1. When calling for a specific department like this:
+```
+var request = require('request');
+request('http://api.umd.io/v0/courses?dept_id=math', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+        console.log(body);
+...
+```
+A slash is added to the end, making the request go to http://api.umd.io/v0/courses?dept_id=math/
+which returns empty body. I want the request to go to http://api.umd.io/v0/courses?dept_id=math
