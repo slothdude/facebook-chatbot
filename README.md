@@ -38,7 +38,10 @@ request('http://api.umd.io/v0/courses?dept_id=math', function (error, response, 
 ...
 ```
 A slash is added to the end, making the request go to https://api.umd.io/v0/courses?dept_id=math/
-which returns empty body. I want the request to go to http://api.umd.io/v0/courses?dept_id=math.
+which returns empty body, like this:
+![withslash.PNG](./withslash.PNG)
+I want the request to go to https://api.umd.io/v0/courses?dept_id=math (no slash) like this:
+![withoutslash.PNG](./withoutslash.PNG)
 I asked my question on stackoverflow. **Solved:** request to https instead of http
 so that there is not an automatic redirect which adds a slash.
 
