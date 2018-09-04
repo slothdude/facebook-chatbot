@@ -21,18 +21,17 @@ back.
 
 Commands (case insensitive)
 =========
-help: list available commands
+- help: list available commands
 
-~~%Color%~~
-%Course_ID% (ex. CMSC131): returns course info on that course at UMD
-%Department_ID% (ex. CMSC): returns all classes at UMD from that department
-'Birthdays?' (ex. birthdays?): returns all your friends that have a birthday today
+- ~~%Color% (ex. red): changes chat color to that color~~
+- %Course_ID% (ex. CMSC131): returns course info on that course at UMD
+- %Department_ID% (ex. CMSC): returns all classes at UMD from that department
+- 'Birthdays?' (ex. birthdays?): returns all your friends that have a birthday today
 
 Challenges
 =============
 1. When calling for a specific department like this:
 ```
-var request = require('request');
 request('http://api.umd.io/v0/courses?dept_id=math', function (error, response, body) {
     if (!error && response.statusCode == 200) {
         console.log(body);
@@ -40,8 +39,7 @@ request('http://api.umd.io/v0/courses?dept_id=math', function (error, response, 
 ```
 A slash is added to the end, making the request go to https://api.umd.io/v0/courses?dept_id=math/
 which returns empty body. I want the request to go to http://api.umd.io/v0/courses?dept_id=math.
-I asked my question on stackoverflow.
-Solved: request to https instead of http
+I asked my question on stackoverflow. **Solved:** request to https instead of http
 so that there is not an automatic redirect which adds a slash.
 
 2. When trying to change the color of the chat (an old feature of this bot that was made harder with an updated version of the facebook-chat-api on npm), I got the error
