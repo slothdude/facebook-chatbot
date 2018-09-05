@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/language": "^1.2.0",
     "colornames": "^1.1.1",
     "dotenv": "^6.0.0",
     "facebook-chat-api": "^1.6.0",

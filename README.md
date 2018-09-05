@@ -1,4 +1,5 @@
 *still making this better but it works*
+*thoughts on what to add next: spotify api?*
 
 Trying it yourself
 ==========
@@ -10,7 +11,9 @@ add your login info to the .ENV file
 ```
 npm start
 ```
-message yourself or have someone message you on facebook
+Now message yourself or have someone message you on facebook. If you want to use
+ the positivity checker on your account, there is extra setup here:
+ https://cloud.google.com/natural-language/docs/quickstart-client-libraries
 
 Overview
 ==========
@@ -23,10 +26,12 @@ Commands (case insensitive)
 =========
 - help: list available commands
 
+- 'Birthdays?' (ex. birthdays?): returns all of MY friends that have a birthday today
 - ~~%Color% (ex. red): changes chat color to that color~~
 - %Course_ID% (ex. CMSC131): returns course info on that course at UMD
 - %Department_ID% (ex. CMSC): returns all classes at UMD from that department
-- 'Birthdays?' (ex. birthdays?): returns all your friends that have a birthday today
+- 'Threads %integer%' (ex. threads 40): ranks positivity in the last message
+sent to or from me with the last %integer% people
 
 Challenges
 =============
@@ -50,3 +55,5 @@ so that there is not an automatic redirect which adds a slash.
 https://github.com/Schmavery/facebook-chat-api/blob/HEAD/DOCS.md#apichangethreadcolorcolor-threadid-callback so idk. Opened up an issue on their github for this and problem 3.
 
 3. When trying to send a reaction to a message, I would get `ERR! setReaction { error: 'Not logged in.' }`
+
+4. I was able to print to the console but not send a message with `api.sendMessage(Sentiment score: ${sentiment.score});` **Solved:** forgot `message.threadID` as second argument.
