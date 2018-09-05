@@ -16,7 +16,7 @@ login(credentials, function callback (err, api) {
 			var body = message.body;
       //api.changeThreadColor("#0000ff", message.threadID);
 			if(body.toLowerCase() == "help" || body.toLowerCase() == "?"){
-				api.sendMessage("Try 'help departments' or 'birthdays?' or 'help threads'",
+				api.sendMessage("Try 'help departments' or 'birthdays?' or 'help pos'",
         message.threadID);
         stopTyping();
         return;
@@ -51,7 +51,7 @@ login(credentials, function callback (err, api) {
 
 			var words = body.split(" ");
       //Get course if it is only thing sent in
-      var regex1 = /\w{4}\d{3}/
+      var regex1 = /^\w{4}\d{3}$/
 			var course;
 			for(var i = 0; i < words.length; i++){
 				if(words[i].match(regex1)){
@@ -65,10 +65,14 @@ login(credentials, function callback (err, api) {
 				dpt = body.match(regex2)[0];
 			}
 
-      var regex3 = /^threads (\d+)/
+      var regex3 = /^pos (\d+)$/
       var threads;
+      var regex4 = /^pos (.+)$/
+      var rankme;
       if(body.match(regex3)){
         threads =  parseInt(body.match(regex3)[1]);
+			} else if(body.match(regex4)){
+        rankme =  body.match(regex4)[1];
 			}
 
 			if(course != undefined){
@@ -123,8 +127,10 @@ login(credentials, function callback (err, api) {
 
 // https://cloud.google.com/natural-language/docs/analyzing-sentiment
 
-      if(body.toLowerCase() == "help threads"){
-        api.sendMessage("Try sending a message like 'threads 20' to "
+      if(body.toLowerCase() == "help pos"){
+        api.sendMessage("Try sending a message like 'pos I love you' to analyze " +
+        "the positivity of your words. Multiple sentences encouraged. You can also "+
+        "send an integer like in 'threads 20' to " +
         "check last 20(for example) people's last message " +
         " to or from me to analyze positivity in the text. -1 to -0.3 = very negative, " +
         "-0.3 - -0.1 = negative, -0.1 - 0.1 = neutral, 0.1 to 0.3 = positive, " +
@@ -133,14 +139,41 @@ login(credentials, function callback (err, api) {
         ,message.threadID);
       }
 
+      var analyzeSentiment = (text, doSentence) => {
+        const document = {
+          content: text,
+          type: 'PLAIN_TEXT',
+        };
+        client
+        .analyzeSentiment({document: document})
+        .then(results => {
+          const sentiment = results[0].documentSentiment;
+          api.sendMessage(`Total Sentiment score: ${sentiment.score}`, message.threadID);
+          if(doSentence){
+            const sentences = results[0].sentences;
+            sentences.forEach(sentence => {
+              api.sendMessage(`Sentence: ${sentence.text.content} \n` +
+              `  Score: ${sentence.sentiment.score}` +
+              `  Magnitude: ${sentence.sentiment.magnitude}`, message.threadID);
+            });
+          }
+        })
+        .catch(err => {
+          console.error('ERROR:', err);
+        });
+      }
+
+      if(rankme != undefined) {
+        analyzeSentiment(rankme, true);
+        stopTyping();
+      }
+
       if(threads != undefined){
         if(threads > 500){
           threads = 500;
         }
         api.sendMessage("checking last " + threads + " people's last message " +
-        " to or from me to analyze positivity in the text. -1 to -0.3 = very negative, " +
-        "-0.3 - -0.1 = negative, -0.1 - 0.1 = neutral, 0.1 to 0.3 = positive, " +
-        "0.3 - 1 = very positive.", message.threadID);
+        " to or from me to analyze positivity in the text.", message.threadID);
         api.getThreadList(threads, null, [], (err, list)=>{
           var snippets = list.map(person => {
             return person.snippet;
@@ -155,31 +188,8 @@ login(credentials, function callback (err, api) {
               returning += snippets[snip];
             else returning += snippets[snip] + ". ";
           }
-          const text = returning;
-
-          // Prepares a document, representing the provided text
-          const document = {
-            content: text,
-            type: 'PLAIN_TEXT',
-          };
-
-          // Detects the sentiment of the document
-          client
-            .analyzeSentiment({document: document})
-            .then(results => {
-              const sentiment = results[0].documentSentiment;
-              api.sendMessage(`Sentiment score: ${sentiment.score}`, message.threadID);
-              // const sentences = results[0].sentences;
-              // sentences.forEach(sentence => {
-              //   console.log(`Sentence: ${sentence.text.content}`);
-              //   console.log(`  Score: ${sentence.sentiment.score}`);
-              //   console.log(`  Magnitude: ${sentence.sentiment.magnitude}`);
-              // });
-            })
-            .catch(err => {
-              console.error('ERROR:', err);
-            });
-            stopTyping();
+          analyzeSentiment(returning, false);
+          stopTyping();
         });
       }
 	  }

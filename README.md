@@ -28,10 +28,12 @@ Commands (case insensitive)
 
 - 'Birthdays?' (ex. birthdays?): returns all of MY friends that have a birthday today
 - ~~%Color% (ex. red): changes chat color to that color~~
-- %Course_ID% (ex. CMSC131): returns course info on that course at UMD
-- %Department_ID% (ex. CMSC): returns all classes at UMD from that department
-- 'Threads %integer%' (ex. threads 40): ranks positivity in the last message
+- '%Course_ID%' (ex. CMSC131): returns course info on that course at UMD
+- '%Department_ID%' (ex. CMSC): returns all classes at UMD from that department
+- 'Pos %integer%' (ex. threads 40): ranks positivity in the last message
 sent to or from me with the last %integer% people
+- 'Pos %String%' (ex. pos I love you): ranks positivity in the text after pos. Also
+gives a sentence by sentence breakdown. 
 
 Challenges
 =============
