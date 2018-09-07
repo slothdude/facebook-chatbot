@@ -1,5 +1,5 @@
 *still making this better but it works*
-*thoughts on what to add next: spotify api?*
+*thoughts on what to add next: spotify api? more google language processing?*
 
 Trying it yourself
 ==========
@@ -31,9 +31,19 @@ Commands (case insensitive)
 - *Course_ID* (ex. CMSC131): returns course info on that course at UMD
 - *Department_ID* (ex. CMSC): returns all classes at UMD from that department
 - `Pos `*integer* (ex. threads 40): ranks positivity in the last message
-sent to or from me with the last %integer% people
+sent to or from me with the last %integer% people and also responds with sticker
 - `Pos `*String* (ex. pos I love you): ranks positivity in the text after pos. Also
-gives a sentence by sentence breakdown.
+gives a sentence by sentence breakdown and responds with sticker 
+
+
+APIS Used
+===========
+- Facebook chat API : https://github.com/Schmavery/facebook-chat-api :  
+allows you to send and receive facebook-messenger messages in node.js
+- UMD.io : https://umd.io/ : University of Maryland data. Student run.
+- Google Cloud Natural Language API : https://cloud.google.com/natural-language/ :
+provides natural language understanding technologies to developers, including sentiment analysis, entity analysis, entity sentiment analysis, content classification, and syntax analysis. This API is part of the larger Cloud Machine Learning API family.
+
 
 Challenges
 =============
@@ -63,3 +73,7 @@ https://github.com/Schmavery/facebook-chat-api/blob/HEAD/DOCS.md#apichangethread
 5. Works when I message myself but not when others message me for 'pos' command.
 **Solved**: In my regex for pos: `var regex4 = /^pos (.+)$/` the p is lowercase,
 so I had to do `if(body.toLowerCase().match(regex4))` instead of `if(body.match(regex4))`.
+
+6. 'pos' commands weren't working over whitespace. **Solved**:
+ Had to change regex from `/^pos (.+)$/` to `/^pos ([\w\W]*)$/`
+ so it would match over line breaks as well.

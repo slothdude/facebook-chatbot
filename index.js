@@ -5,16 +5,19 @@ var login = require("facebook-chat-api");
 var toHex = require('colornames');
 var request = require('request');
 require('dotenv').config();
+
+
+
 var credentials = {email: process.env.FB_EMAIL, password: process.env.FB_PASSWORD};
 //set GOOGLE_APPLICATION_CREDENTIALS=C:\Users\Marc\Downloads\facebook-chat-bot-credentials.json
-login(credentials, function callback (err, api) {
+// login(credentials, function callback (err, api) {
+login({appState: JSON.parse(fs.readFileSync('appstate.json', 'utf8'))}, (err, api) => {
     if(err) return console.error(err);
 	  api.setOptions({selfListen: true});
     api.listen(function callback(err, message) {
     if(message.type == 'message'){
       var stopTyping = api.sendTypingIndicator(message.threadID);
 			var body = message.body;
-      //api.changeThreadColor("#0000ff", message.threadID);
 			if(body.toLowerCase() == "help" || body.toLowerCase() == "?"){
 				api.sendMessage("Try 'help departments' or 'birthdays?' or 'help pos'",
         message.threadID);
@@ -67,7 +70,7 @@ login(credentials, function callback (err, api) {
 
       var regex3 = /^pos (\d+)$/
       var threads;
-      var regex4 = /^pos (.+)$/
+      var regex4 = /^pos ([\w\W]*)$/
       var rankme;
       if(body.toLowerCase().match(regex3)){
         threads =  parseInt(body.toLowerCase().match(regex3)[1]);
@@ -131,6 +134,26 @@ login(credentials, function callback (err, api) {
         ,message.threadID);
       }
 
+      var getStickerFromSentiment = (sentiment) => {
+        var stickerID;
+        switch(true){
+          case sentiment >= 0.3:
+            stickerID = 392309990866313;
+            break;
+          case sentiment > 0:
+            stickerID = 392308740866438;
+            break;
+          case sentiment == 0:
+            stickerID = 392310027532976;
+            break;
+          case sentiment >= -0.3:
+            stickerID = 392310007532978;
+            break;
+          default: stickerID = 392309957532983;
+        }
+        return stickerID;
+      }
+
       var analyzeSentiment = (text, doSentence) => {
         const document = {
           content: text,
@@ -140,13 +163,18 @@ login(credentials, function callback (err, api) {
         .analyzeSentiment({document: document})
         .then(results => {
           const sentiment = results[0].documentSentiment;
-          api.sendMessage(`Total Sentiment score: ${sentiment.score}`, message.threadID);
+          var msg = {
+            body: `Total Sentiment score: ${sentiment.score}\n` +
+              `Total Magnitude score: ${sentiment.magnitude}`,
+            sticker: getStickerFromSentiment(sentiment.score)
+          }
+
+          api.sendMessage(msg, message.threadID);
           if(doSentence){
             const sentences = results[0].sentences;
             sentences.forEach(sentence => {
               api.sendMessage(`Sentence: ${sentence.text.content} \n` +
-              `  Score: ${sentence.sentiment.score}` +
-              `  Magnitude: ${sentence.sentiment.magnitude}`, message.threadID);
+              `  Sentiment: ${sentence.sentiment.score}`);
             });
           }
         })
@@ -187,4 +215,5 @@ login(credentials, function callback (err, api) {
       }
 	  }
   });
+  fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState()));
 });
