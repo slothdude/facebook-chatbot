@@ -69,10 +69,10 @@ login(credentials, function callback (err, api) {
       var threads;
       var regex4 = /^pos (.+)$/
       var rankme;
-      if(body.match(regex3)){
-        threads =  parseInt(body.match(regex3)[1]);
-			} else if(body.match(regex4)){
-        rankme =  body.match(regex4)[1];
+      if(body.toLowerCase().match(regex3)){
+        threads =  parseInt(body.toLowerCase().match(regex3)[1]);
+			} else if(body.toLowerCase().match(regex4)){
+        rankme =  body.toLowerCase().match(regex4)[1];
 			}
 
 			if(course != undefined){
@@ -82,14 +82,6 @@ login(credentials, function callback (err, api) {
     				    api.sendMessage(jsonResponse.description,message.threadID);
                 // api.setMessageReaction(":like:", message.threadID);
       			}
-            //below causes spamming of feed, for now trying a course that doesnt
-            //exist will just return blank
-            // else {
-            //    api.sendMessage("We could not access information on course " + course
-            //    + " at this time. Sorry!" ,message.threadID);
-            //    course = null;
-            //    api.setMessageReaction(":sad:", message.threadID);
-            // }
     		});
 			}
 
@@ -110,18 +102,18 @@ login(credentials, function callback (err, api) {
 			if(dpt != undefined){
         var returning = "";
         request('https://api.umd.io/v0/courses?dept_id=' + dpt, function (error, response, body) {
-		  		 if (!error && response.statusCode == 200) {
-              console.log(body);
-		    			var jsonResponse = JSON.parse(body);
-  						console.log(jsonResponse);
-  						for(var i = 0; i < jsonResponse.length; i++){
-  							var myClass = jsonResponse[i];
-  							returning += (myClass.course_id + "\n" +  myClass.name+"\n\n");
-  						}
-  						if(returning.length > 0)
-  							api.sendMessage(myClass.department +":\n" + returning+
+          if (!error && response.statusCode == 200) {
+            console.log(body);
+            var jsonResponse = JSON.parse(body);
+            console.log(jsonResponse);
+            for(var i = 0; i < jsonResponse.length; i++){
+              var myClass = jsonResponse[i];
+              returning += (myClass.course_id + "\n" +  myClass.name+"\n\n");
+            }
+            if(returning.length > 0)
+              api.sendMessage(myClass.department +":\n" + returning +
                 "Give me a class code for a description",message.threadID);
-		  			  }
+          }
         });
 			}
 
@@ -163,6 +155,7 @@ login(credentials, function callback (err, api) {
         });
       }
 
+      console.log(body + "\nrankMe: " + rankme + "\nthreads: " + threads);
       if(rankme != undefined) {
         analyzeSentiment(rankme, true);
         stopTyping();

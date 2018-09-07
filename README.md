@@ -26,14 +26,14 @@ Commands (case insensitive)
 =========
 - help: list available commands
 
-- 'Birthdays?' (ex. birthdays?): returns all of MY friends that have a birthday today
-- ~~%Color% (ex. red): changes chat color to that color~~
-- '%Course_ID%' (ex. CMSC131): returns course info on that course at UMD
-- '%Department_ID%' (ex. CMSC): returns all classes at UMD from that department
-- 'Pos %integer%' (ex. threads 40): ranks positivity in the last message
+- `Birthdays?` (ex. birthdays?): returns all of MY friends that have a birthday today
+- ~~`Color` (ex. red): changes chat color to that color~~
+- *Course_ID* (ex. CMSC131): returns course info on that course at UMD
+- *Department_ID* (ex. CMSC): returns all classes at UMD from that department
+- `Pos `*integer* (ex. threads 40): ranks positivity in the last message
 sent to or from me with the last %integer% people
-- 'Pos %String%' (ex. pos I love you): ranks positivity in the text after pos. Also
-gives a sentence by sentence breakdown. 
+- `Pos `*String* (ex. pos I love you): ranks positivity in the text after pos. Also
+gives a sentence by sentence breakdown.
 
 Challenges
 =============
@@ -59,3 +59,7 @@ https://github.com/Schmavery/facebook-chat-api/blob/HEAD/DOCS.md#apichangethread
 3. When trying to send a reaction to a message, I would get `ERR! setReaction { error: 'Not logged in.' }`
 
 4. I was able to print to the console but not send a message with `api.sendMessage(Sentiment score: ${sentiment.score});` **Solved:** forgot `message.threadID` as second argument.
+
+5. Works when I message myself but not when others message me for 'pos' command.
+**Solved**: In my regex for pos: `var regex4 = /^pos (.+)$/` the p is lowercase,
+so I had to do `if(body.toLowerCase().match(regex4))` instead of `if(body.match(regex4))`.
